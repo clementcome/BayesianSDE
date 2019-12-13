@@ -51,7 +51,7 @@ def main (data,m,Niter) :
                     
                     R[m*j+k][i]=np.random.normal(muR,sigmaR);
                 
-                x[m*j+k][i]= nu[m*j+k]+R[m+j+k];
+                x[m*j+k]= nu[m*j+k]+R[m+j+k];
 
         mu=0
         beta=0
@@ -68,6 +68,7 @@ def main (data,m,Niter) :
     plt.plot(X,theta,X,b)
     plt.show()
     return 0
+
 
 
 
