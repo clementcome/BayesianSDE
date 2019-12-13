@@ -44,7 +44,7 @@ def main (data,m,Niter) :
         for j in range (n-2):
             for k in range (m-1):
                 for i in range (N-1):
-                    nu[m*j+k][i] = (1+b[l][i]*Dtau) * nu [m*j+k-1][i]
+                    nu[m*j+k][i] = (1+b[l][i]*Dtau) * nu[m*j+k-1][i]
                     
                     muR= R[m*j+k-1][i] +Dtau*(-R[m*j+k-1][i])/(1+(k-1)/m)
                     sigmaR= (1+k/m)/(1+(k-1)/m)*Dtau*theta[l]**2*x[m*j+k-1][i]
