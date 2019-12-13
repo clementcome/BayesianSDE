@@ -22,7 +22,7 @@ def reshaped_df(init_data, chosed_tickers):
 
 @pytest.fixture
 def array_N_stocks(init_data, reshaped_df):
-    array = reshaped_df.drop(columns = ["date"]).to_numpy()
+    array = reshaped_df.dropna().to_numpy()
     return array
 
 def test_get_data():
@@ -50,16 +50,15 @@ def test_choose_tickers(init_data):
 
 def test_reshape_data(init_data, chosed_tickers):
     reshaped_data = init_data._reshape_data_given_tickers(chosed_tickers)
-    assert len(reshaped_data.columns) == len(chosed_tickers) +1 #A column for each ticker + a column for date
-    assert (reshaped_data["date"] == reshaped_data["date"].sort_values()).all()
+    assert len(reshaped_data.columns) == len(chosed_tickers)
 
 def test_convert_df_to_array(init_data, reshaped_df, chosed_tickers):
     array, tickers, dates = init_data._convert_df_to_array(reshaped_df)
-    assert tickers == chosed_tickers
+    assert set(tickers) == set(chosed_tickers)
     assert len(array[0]) == len(tickers)
-    assert dates == list(reshaped_df["date"])
+    assert dates == list(reshaped_df.index)
 
 def test_get_N_stocks(init_data, array_N_stocks, chosed_tickers, N_stock):
     array, tickers, _ = init_data.get_N_stocks(N_stock)
-    assert (array == array_N_stocks).all()
-    assert tickers == chosed_tickers 
+    assert (array == array_N_stocks).any()
+    assert set(tickers) == set(chosed_tickers)

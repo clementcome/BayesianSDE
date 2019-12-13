@@ -50,13 +50,15 @@ class StockData():
         Rows are described by their date and each column corresponds to a stock described by its ticker
         """
         df = self.data_df
-        dict_df = {
-            ticker: df[df["ticker"] == ticker][["open", "date"]].rename(columns = {"open": ticker})
-        for ticker in tickers_list}
-        joined_df = dict_df[tickers_list[0]]
-        for ticker in tickers_list[1:]:
-            joined_df = pd.merge(joined_df, dict_df[ticker], how="inner", on="date")
-        joined_df = joined_df.sort_values("date")
+        df = df[df["ticker"].isin(tickers_list)]
+        joined_df = df.pivot(index='date', columns='ticker', values='open').dropna()
+        # dict_df = {
+        #     ticker: df[df["ticker"] == ticker][["open", "date"]].rename(columns = {"open": ticker})
+        # for ticker in tickers_list}
+        # joined_df = dict_df[tickers_list[0]]
+        # for ticker in tickers_list[1:]:
+        #     joined_df = pd.merge(joined_df, dict_df[ticker], how="inner", on="date")
+        # joined_df = joined_df.sort_values("date")
         return joined_df
 
     def _convert_df_to_array(self, df):
@@ -66,12 +68,19 @@ class StockData():
         tickers [string]: list of the tickers represented in array columns
         dates [np.datetime64]: list of the dates of observation
         """
-        dates = list(df["date"])
-        tickers = list(df.drop(columns=["date"]).columns)
-        array = df.drop(columns=["date"]).to_numpy()
+        dates = list(df.index)
+        tickers = list(df.columns)
+        array = df.to_numpy()
         return array, tickers, dates
     
     def get_N_stocks(self,N):
+        """
+        Function used to extract the simultaneous observations of N stocks.
+        Returns:
+        array np.array: the array of the stock prices observations,
+        tickers [string]: list of the tickers represented in array columns
+        dates [np.datetime64]: list of the dates of observation
+        """
         tickers = self._choose_tickers(N)
         reshaped_df = self._reshape_data_given_tickers(tickers)
         return self._convert_df_to_array(reshaped_df)
