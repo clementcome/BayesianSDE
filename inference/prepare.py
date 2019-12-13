@@ -72,6 +72,13 @@ class StockData():
         return array, tickers, dates
     
     def get_N_stocks(self,N):
+        """
+        Function used to extract the simultaneous observations of N stocks.
+        Returns:
+        array np.array: the array of the stock prices observations,
+        tickers [string]: list of the tickers represented in array columns
+        dates [np.datetime64]: list of the dates of observation
+        """
         tickers = self._choose_tickers(N)
         reshaped_df = self._reshape_data_given_tickers(tickers)
         return self._convert_df_to_array(reshaped_df)
