@@ -52,13 +52,6 @@ class StockData():
         df = self.data_df
         df = df[df["ticker"].isin(tickers_list)]
         joined_df = df.pivot(index='date', columns='ticker', values='open').dropna()
-        # dict_df = {
-        #     ticker: df[df["ticker"] == ticker][["open", "date"]].rename(columns = {"open": ticker})
-        # for ticker in tickers_list}
-        # joined_df = dict_df[tickers_list[0]]
-        # for ticker in tickers_list[1:]:
-        #     joined_df = pd.merge(joined_df, dict_df[ticker], how="inner", on="date")
-        # joined_df = joined_df.sort_values("date")
         return joined_df
 
     def _convert_df_to_array(self, df):
