@@ -1,7 +1,7 @@
 from inference.prepare import StockData
 
 stockData = StockData()
-array, tickers, dates = stockData.get_N_stocks(100)
+array, tickers, dates = stockData.get_N_stocks(10)
 print("Shape of the output array is: {}".format(array.shape))
 print("Number of stocks observed is: {}".format(len(tickers)))
 print("Number of observations is: {}".format(len(dates)))

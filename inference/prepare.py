@@ -11,6 +11,10 @@ class StockData():
         self.data_df = self._prepare_data(self.data_df)
         self.tickers_ordered = self._get_tickers_ordered(self.data_df)
     
+    def save_data(self, path = Path("../daily-historical-stock-prices-1970-2018/historical_stock_prices_light.csv")):
+        """Prints the interesting data into a csv file"""
+        self.data_df.to_csv(path)
+    
     def _get_data(self, path):
         """
         Retrieves the data from the file found at path

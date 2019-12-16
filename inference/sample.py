@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+from tqdm import tqdm
 
 class StockSampler():
     """Class implementing the sampling algortithm."""
@@ -39,7 +40,7 @@ class StockSampler():
         """
         Initialize the value of the different parameters
         """
-        self.b2[0] = np.random.gamma(a0, 1/b0, self.N)
+        self.b2[0] = 1/np.random.gamma(a0, 1/b0, self.N)
         self.theta[0] = np.random.normal(m0, np.sqrt(s02))
     
     def sample(self, n_iter = 100, m0 = 0, s02 = 0.01, a0 = 4, b0 = 1):
@@ -48,8 +49,8 @@ class StockSampler():
         """
         self.init_shape(n_iter)
         self.init_value(m0, s02, a0, b0)
-        self.mu = []
-        for l in range(n_iter):
+        self.beta = []
+        for l in tqdm(range(n_iter)):
             for j in range(self.n-1):
                 for k in range(1,self.m):
                     self.eta[self.m*j + k] = (1+ self.theta[l]/self.m)*self.eta[self.m*j + k -1]
@@ -62,15 +63,19 @@ class StockSampler():
                 mu_ijk = self.m*(self.x/np.roll(self.x, 1, axis=1) -1)
                 mu_ijk = np.delete(mu_ijk, 0, axis=0)
                 mu_i = np.sum(mu_ijk, axis=0)/(self.n*self.m)
-                tau_i = self.n/ self.b2[l]
+                tau_i = self.n/ self.b2[l]/(self.n*self.m)
                 tau_star = (np.sum(tau_i) + 1/s02)/(self.N+1)
                 mu_star = (np.sum(mu_i*tau_i) + m0/s02)/(self.N+1)/tau_star
                 beta_ijk = (self.x/np.roll(self.x, 1, axis=1) -1 - self.theta[l]/self.m)**2
                 beta_ijk = np.delete(beta_ijk, 0, axis=0)
                 beta_i_star = np.sum(beta_ijk, axis=0)
-                self.mu.append(mu_ijk)
+                self.beta.append(beta_i_star)
                 self.theta[l+1] = np.random.normal(mu_star, np.sqrt(1/tau_star))
-                self.b2[l+1] = 1/np.random.gamma(a0 + self.n*self.m/2, 1/(b0 + beta_i_star))
+                proposed_b2 = 1/np.random.gamma(a0 + 1/2, self.n*self.m/(b0 + beta_i_star))
+                self.b2[l+1] = 1*self.b2[l]
+                for i in range(self.N):
+                    if proposed_b2[i] < 1:
+                        self.b2[l+1][i] = proposed_b2[i]
             self.etas[l] = 1*self.eta 
             self.Rs[l] = 1*self.R 
 
