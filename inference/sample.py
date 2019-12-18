@@ -1,4 +1,5 @@
 import numpy as np
+import json
 import copy
 from tqdm import tqdm
 
@@ -79,8 +80,20 @@ class StockSampler():
             self.etas[l] = 1*self.eta 
             self.Rs[l] = 1*self.R 
 
-    def save_to_json(self, file_path):
+    def save_to_json(self, file_path="samples.json"):
         """
         Prints the parameters sampled into a json file at file path filepath
         """
-        pass
+        to_save = {
+            'x': (self.etas + self.Rs).tolist(),
+            'params': {
+                'theta': self.theta.tolist(),
+                'b2': self.b2.tolist()
+            },
+            'tickers': self.tickers,
+            'dates': self.dates,
+            'prices_array': self.prices_array.tolist()
+        }
+        with open(file_path, 'w') as out_file:
+            json.dump(to_save, out_file)
+        print("Samples saved in {}".format(file_path))
