@@ -93,7 +93,7 @@ class StockAnalysis():
         if not(tickers_list):
             tickers_list = self.tickers
         M = len(self.params)
-        fig, axes = plt.subplots(ncols=M, figsize=(5, 10))
+        fig, axes = plt.subplots(ncols=M)
         keys = list(self.params.keys())
         for j in range(M):
             values = self.params[keys[j]]
