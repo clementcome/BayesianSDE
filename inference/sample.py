@@ -32,7 +32,7 @@ class StockSampler():
         Initialize the shape of the different parameters for n_iter iterations
         """
         self.b2 = np.zeros((n_iter, self.N))
-        self.theta = np.zeros(n_iter)
+        self.theta = np.zeros((n_iter, self.N))
         nbis, N = self.eta.shape
         self.etas = np.zeros((n_iter, nbis, N))
         self.Rs = np.zeros((n_iter, nbis, N))
@@ -42,8 +42,8 @@ class StockSampler():
         Initialize the value of the different parameters
         """
         self.b2[0] = 1/np.random.gamma(a0, 1/b0, self.N)
-        self.theta[0] = np.random.normal(m0, np.sqrt(s02))
-    
+        self.theta[0] = np.random.normal([m0]*self.N, [np.sqrt(s02)]*self.N)
+
     def sample(self, n_iter = 100, m0 = 0, s02 = 0.01, a0 = 4, b0 = 1):
         """
         Sample the different parameters for n_iter iterations
@@ -71,7 +71,9 @@ class StockSampler():
                 beta_ijk = np.delete(beta_ijk, 0, axis=0)
                 beta_i_star = np.sum(beta_ijk, axis=0)
                 self.beta.append(beta_i_star)
-                self.theta[l+1] = np.random.normal(mu_star, np.sqrt(1/tau_star))
+                
+                self.theta[l+1]= np.random.normal([mu_star]*self.N, [np.sqrt(1/tau_star)]*self.N)
+                
                 proposed_b2 = 1/np.random.gamma(a0 + 1/2, self.n*self.m/(b0 + beta_i_star))
                 self.b2[l+1] = 1*self.b2[l]
                 for i in range(self.N):
@@ -97,3 +99,4 @@ class StockSampler():
         with open(file_path, 'w') as out_file:
             json.dump(to_save, out_file)
         print("Samples saved in {}".format(file_path))
+
