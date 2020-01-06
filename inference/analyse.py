@@ -81,6 +81,26 @@ class StockAnalysis():
             ax[i].legend()
         fig.set_figheight(5*len(tickers_list))
 
+    def plot_quantiles_percentage(self, tickers_list=None):
+        """
+        Plots the quantiles of the observations from the samples for the tickers in tickers_list
+        minus the observations divided by the observations
+
+        Parameters
+        ----------
+        tickers_list : list, optional
+            tickers under observation
+        """
+        if not(tickers_list):
+            tickers_list = self.tickers
+        fig, ax = plt.subplots(nrows=len(tickers_list))
+        for i in range(len(tickers_list)):
+            ax[i].plot(np.percentile((self.x[:, :, i] - self.prices_array[:, i]) / self.prices_array[:, i],
+                                     [2.5, 97.5], axis=0).T, 'k', label="5% quantiles percentage")
+            # ax[i].plot(self.prices_array[:, i], 'r', label='$x(t)$')
+            ax[i].legend()
+        fig.set_figheight(5*len(tickers_list))
+
     def plot_parameter_distributions(self, tickers_list=None):
         """
         Plots the distributions of the parameters related to the stocks given in tickers_list
