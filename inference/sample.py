@@ -34,7 +34,7 @@ class StockSampler():
         """
         Initialize the shape of the different parameters for n_iter iterations
         """
-        self.b2 = np.zeros((n_iter, self.N))
+        self.b2 = np.zeros((n_iter, ))
         self.theta = np.zeros((n_iter, self.N))
         nbis, N = self.eta.shape
         self.etas = np.zeros((n_iter, nbis, N))
@@ -44,7 +44,7 @@ class StockSampler():
         """
         Initialize the value of the different parameters
         """
-        self.b2[0] = 1/np.random.gamma(a0, 1/b0, self.N)
+        self.b2[0] = 1/np.random.gamma(a0, 1/b0)
         self.theta[0] = np.random.normal(
             m0, np.sqrt(s02), size=self.N)
 
@@ -79,17 +79,16 @@ class StockSampler():
                 beta_ijk = (self.x/np.roll(self.x, 1,
                                            axis=1) - 1 - self.theta[l]/self.m)**2
                 beta_ijk = np.delete(beta_ijk, 0, axis=0)
-                beta_i_star = np.sum(beta_ijk, axis=0)
+                beta_i_star = np.sum(beta_ijk)
                 self.beta.append(beta_i_star)
                 self.theta[l+1] = np.random.normal(
                     (mu_i + m0)/(tau_i+tau_0), 1/(tau_i + tau_0))
                 proposed_b2 = 1 / \
                     np.random.gamma(
-                        a0 + 1/2, self.n*self.m/(b0 + beta_i_star))
+                        a0 + 1/2, self.n*self.m*self.N/(b0 + beta_i_star))
                 self.b2[l+1] = 1*self.b2[l]
-                for i in range(self.N):
-                    if proposed_b2[i] < 1:
-                        self.b2[l+1][i] = proposed_b2[i]
+                if proposed_b2 < 1:
+                    self.b2[l+1] = proposed_b2
             self.etas[l] = 1*self.eta
             self.Rs[l] = 1*self.R
 
